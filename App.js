@@ -1,5 +1,5 @@
 import React,{ useState } from 'react';
-import { StyleSheet, Text, View, TouchableOpacity, Alert, TextInput, Vibration } from 'react-native';
+import { StyleSheet, Text, View, TouchableOpacity, Alert, TextInput, Vibration, KeyboardAvoidingView } from 'react-native';
 import api from './src/services/api';
 
 export default function App() {
@@ -38,7 +38,7 @@ export default function App() {
   }
 
   return (
-    <View style={styles.container}>
+    <KeyboardAvoidingView behavior='height' enabled={true} style={styles.container}>
       <Text style={styles.textTituloApp}>Teste De API</Text>
       <View style={styles.container2}>
         <TextInput 
@@ -49,7 +49,7 @@ export default function App() {
           editable={true}
           value={valorInput}
           cursorColor='#000'
-          //selection={{start: 0, end: 0}}
+          keyboard
         />
         <TouchableOpacity 
           style={styles.touch}
@@ -66,7 +66,7 @@ export default function App() {
         <Text style={styles.textTituloFrase}>Frase Configurada:</Text>
         <Text style={styles.textFrase}>{frase}</Text>
       </View>
-    </View>
+    </KeyboardAvoidingView>
   );
 }
 

@@ -1,48 +1,71 @@
 import React,{ useState } from 'react';
-import { StyleSheet, Text, View, TouchableOpacity, Alert, TextInput } from 'react-native';
+import { StyleSheet, Text, View, TouchableOpacity, Alert, TextInput, Vibration } from 'react-native';
 import api from './src/services/api';
 
 export default function App() {
 
+  var pat = [500, 300, 200]
+
   const [frase, setFrase] = useState('')
-  const [valorInput, setValorInput] = useState('Ola')
+  const [valorInput, setValorInput] = useState('')
+
+  var timer 
 
   async function consultar(){
-
     const {data}  = await api.get('/')
     setFrase(data.nome)
     console.log(data.nome)
-    valorInput=null
+    if(data.nome == 'silva'){
+      clearInterval(timer)
+      Vibration.vibrate(pat, true)  
+    }
+    setValorInput('')
   }
 
   async function setar(){
-    await api.post('/insert', {'nome': 'Eduardo'})
+    
+    if(valorInput != ''){
+      await api.post('/insert', {'nome': valorInput}).then(() => {
+        Alert.alert('AVISO', 'Valor inserido com sucesso!')
+      })
+      setValorInput('')
+    }
+    else{
+      Alert.alert('ERRO', 'Entrada de texto vazia. Escreva algo.')
+      Vibration.cancel()
+      timer = setInterval(consultar, 5000)
+    }
   }
 
   return (
     <View style={styles.container}>
-      <TextInput 
-        style={styles.textEntrada}
-        placeholder='Frase aqui'
-        textAlign='center'
-        onChangeText={setValorInput}
-        editable={true}
-        value={valorInput}
-      />
-      <TouchableOpacity 
-        style={styles.touch}
-        onPress={consultar}
-      >
-      <Text style={styles.textButton}>CONSULTAR</Text>
-      </TouchableOpacity>
-      <TouchableOpacity 
-        style={styles.touch}
-        onPress={setar}
-      >
-      <Text style={styles.textButton}>SETAR</Text>
-      </TouchableOpacity>
-      <Text style={styles.textTituloFrase}>Frase Configurada:</Text>
-      <Text style={styles.textFrase}>{frase}</Text>
+      <Text style={styles.textTituloApp}>Teste De API</Text>
+      <View style={styles.container2}>
+        <TextInput 
+          style={styles.textEntrada}
+          placeholder='Frase aqui'
+          textAlign='center'
+          onChangeText={setValorInput}
+          editable={true}
+          value={valorInput}
+          cursorColor='#000'
+          //selection={{start: 0, end: 0}}
+        />
+        <TouchableOpacity 
+          style={styles.touch}
+          onPress={consultar}
+        >
+        <Text style={styles.textButton}>CONSULTAR</Text>
+        </TouchableOpacity>
+        <TouchableOpacity 
+          style={styles.touch}
+          onPress={setar}
+        >
+        <Text style={styles.textButton}>SETAR</Text>
+        </TouchableOpacity>
+        <Text style={styles.textTituloFrase}>Frase Configurada:</Text>
+        <Text style={styles.textFrase}>{frase}</Text>
+      </View>
     </View>
   );
 }
@@ -52,7 +75,15 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: '#aaa'
+    backgroundColor: '#C0C0C0'
+  },
+  container2:{
+    width: '85%',
+    height: '70%',
+    borderRadius: 12,
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: '#DDD'
   },
   touch:{
     backgroundColor: 'red',
@@ -84,5 +115,9 @@ const styles = StyleSheet.create({
     marginTop: 30,
     fontWeight: 'bold',
     fontSize: 18
+  },
+  textTituloApp:{
+    fontSize: 30,
+    marginBottom: 40,
   }
 });
